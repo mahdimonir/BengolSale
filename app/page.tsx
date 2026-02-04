@@ -106,8 +106,13 @@ export default function Home() {
   const [formData, setFormData] = useState({ name: '', phone: '', address: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  const [isOrderSuccess, setIsOrderSuccess] = useState(false);
   const checkoutRef = useRef<HTMLDivElement>(null);
-  const scrollToCheckout = () => checkoutRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const formRef = useRef<HTMLDivElement>(null);
+  
+  const scrollToCheckout = () => {
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
 
   const selectedIds = Object.keys(selectedItems);
   const activeProducts = COMBOS.filter(c => selectedIds.includes(c.id));
@@ -196,6 +201,7 @@ export default function Home() {
       const data = await response.json();
       if (data.success) {
         toast.success(`Order placed successfully! Order ID: ${data.orderId}`);
+        setIsOrderSuccess(true);
         setSelectedItems({});
         setFormData({ name: '', phone: '', address: '' });
       } else {
@@ -293,7 +299,7 @@ export default function Home() {
                     >
                       <div onClick={() => toggleSelection(combo)} className="cursor-pointer">
                           <div className="aspect-[4/3] rounded-3xl overflow-hidden mb-6 bg-gray-200">
-                            <img src={combo.image} alt={combo.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                            <img src={combo.image} alt={combo.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
                           </div>
                           <div className="flex justify-between items-start mb-2">
                             <h4 className="font-black text-brand-dark">{combo.name}</h4>
@@ -314,8 +320,8 @@ export default function Home() {
                                     }}
                                     className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${
                                         selectedItems[combo.id]?.size === size
-                                        ? 'bg-brand-primary text-white shadow-lg scale-110'
-                                        : 'bg-white text-gray-500 hover:bg-gray-200'
+                                        ? 'bg-brand-primary text-white shadow-lg scale-110 ring-2 ring-brand-primary ring-offset-2'
+                                        : 'bg-white text-gray-400 hover:bg-gray-100'
                                     }`}
                                   >
                                       {size}
@@ -370,7 +376,7 @@ export default function Home() {
                                 }}
                                 className={`h-6 rounded-md text-[8px] font-bold transition-all ${
                                     selectedItems[combo.id]?.size === size
-                                    ? 'bg-brand-primary text-white'
+                                    ? 'bg-brand-primary text-white ring-1 ring-brand-primary ring-offset-1'
                                     : 'bg-brand-muted text-gray-400 hover:bg-gray-200'
                                 }`}
                               >
@@ -390,98 +396,131 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="lg:sticky lg:top-24">
-              <div className="bg-white rounded-[3rem] p-8 shadow-2xl border border-gray-100">
-                <h2 className="text-2xl font-black text-brand-dark mb-8">চেকআউট</h2>
+            {/* Sticky Checkout Panel */}
+            <div className="lg:sticky lg:top-24" ref={formRef}>
+              <div className="bg-white rounded-[3rem] p-8 shadow-2xl border border-gray-100 overflow-hidden relative">
                 
-                <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-                  <input 
-                    type="text" 
-                    placeholder="আপনার নাম" 
-                    value={formData.name}
-                    onChange={e => setFormData({...formData, name: e.target.value})}
-                    className="w-full bg-brand-muted/50 border border-gray-100 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all" 
-                  />
-                  <input 
-                    type="tel" 
-                    placeholder="মোবাইল নাম্বার" 
-                    value={formData.phone}
-                    onChange={e => setFormData({...formData, phone: e.target.value})}
-                    className="w-full bg-brand-muted/50 border border-gray-100 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all" 
-                  />
-                  <textarea 
-                    rows={2} 
-                    placeholder="পূর্ণ ঠিকানা" 
-                    value={formData.address}
-                    onChange={e => setFormData({...formData, address: e.target.value})}
-                    className="w-full bg-brand-muted/50 border border-gray-100 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all" 
-                  />
-
-                  <div className="grid grid-cols-2 gap-3 mt-6">
-                    <button type="button" onClick={() => setDeliveryArea('inside')} className={`py-3 rounded-2xl text-[10px] font-black uppercase transition-all ${deliveryArea === 'inside' ? 'bg-brand-dark text-white' : 'bg-brand-muted text-gray-400'}`}>ঢাকা (৳৮০)</button>
-                    <button type="button" onClick={() => setDeliveryArea('outside')} className={`py-3 rounded-2xl text-[10px] font-black uppercase transition-all ${deliveryArea === 'outside' ? 'bg-brand-dark text-white' : 'bg-brand-muted text-gray-400'}`}>বাহিরে (৳১৩০)</button>
-                  </div>
-
-                  <div className="bg-brand-dark rounded-3xl p-6 mt-8 text-white">
-                    <div className="space-y-3 mb-4 max-h-48 overflow-y-auto no-scrollbar border-b border-white/5 pb-4">
-                       {activeProducts.map(item => (
-                         <div key={item.id} className="flex justify-between items-center text-[10px]">
-                           <div className="flex flex-col opacity-80">
-                               <span className="font-bold">{item.name}</span>
-                               <span className="text-[9px] text-brand-primary">Size: {selectedItems[item.id].size}</span>
-                           </div>
-                           
-                           <div className="flex items-center gap-3">
-                               <div className="flex items-center gap-2 bg-white/10 rounded-lg px-1.5 py-0.5">
-                                   <button 
-                                     onClick={() => handleQuantity(item.id, -1)}
-                                     className="text-white hover:text-brand-primary px-1 font-bold text-xs"
-                                   >
-                                     -
-                                   </button>
-                                   <span className="font-bold text-white w-3 text-center text-xs">{selectedItems[item.id].quantity}</span>
-                                   <button 
-                                     onClick={() => handleQuantity(item.id, 1)}
-                                     className="text-white hover:text-brand-primary px-1 font-bold text-xs"
-                                   >
-                                     +
-                                   </button>
-                               </div>
-
-                               <span className="opacity-80">৳{item.price * selectedItems[item.id].quantity}</span>
-                               
-                               <button 
-                                onClick={() => handleRemove(item.id)}
-                                className="hover:text-red-400 transition ml-1"
-                               >
-                                <X className="w-3 h-3" />
-                               </button>
-                           </div>
-                         </div>
-                       ))}
-                       {activeProducts.length === 0 && <p className="text-[10px] text-brand-primary italic">পণ্য সিলেক্ট করুন...</p>}
-                    </div>
-
-                    <div className="flex justify-between text-xs mb-2">
-                      <span className="opacity-60">ডেলিভারি চার্জ</span>
-                      <span className={isFreeDelivery ? 'text-brand-accent' : ''}>{isFreeDelivery ? 'FREE' : `৳${deliveryCharge}`}</span>
-                    </div>
-                    
-                    <div className="flex justify-between items-center pt-2">
-                      <span className="text-xs font-bold uppercase tracking-widest">Total Bill</span>
-                      <span className="text-2xl font-black text-brand-primary">৳{total}</span>
-                    </div>
-
-                    <button 
-                      type="button"
-                      onClick={handleSubmit}
-                      disabled={activeProducts.length === 0 || isSubmitting}
-                      className="w-full bg-brand-primary text-white py-4 rounded-2xl text-md font-bold mt-6 shadow-xl shadow-brand-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:grayscale"
+                <AnimatePresence mode="wait">
+                {isOrderSuccess ? (
+                    <motion.div 
+                        key="success"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex flex-col items-center text-center py-10"
                     >
-                      {isSubmitting ? 'Processing...' : 'অর্ডার কনফার্ম করুন'}
-                    </button>
-                  </div>
-                </form>
+                        <div className="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mb-6 shadow-xl">
+                            <Check className="w-10 h-10" />
+                        </div>
+                        <h2 className="text-3xl font-black text-brand-dark mb-2">ধন্যবাদ!</h2>
+                        <p className="text-gray-500 text-sm mb-8">আপনার অর্ডারটি সফলভাবে রিসিভ করা হয়েছে।<br/>আমাদের প্রতিনিধি শীঘ্রই কল করবেন।</p>
+                        
+                        <button 
+                            onClick={() => setIsOrderSuccess(false)}
+                            className="bg-brand-muted text-gray-600 px-8 py-3 rounded-xl font-bold text-xs hover:bg-gray-200 transition"
+                        >
+                            আরও অর্ডার করবেন?
+                        </button>
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        key="form"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                    >
+                        <h2 className="text-2xl font-black text-brand-dark mb-8">চেকআউট</h2>
+                        
+                        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                          <input 
+                            type="text" 
+                            placeholder="আপনার নাম" 
+                            value={formData.name}
+                            onChange={e => setFormData({...formData, name: e.target.value})}
+                            className="w-full bg-brand-muted/50 border border-gray-100 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all" 
+                          />
+                          <input 
+                            type="tel" 
+                            placeholder="মোবাইল নাম্বার" 
+                            value={formData.phone}
+                            onChange={e => setFormData({...formData, phone: e.target.value})}
+                            className="w-full bg-brand-muted/50 border border-gray-100 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all" 
+                          />
+                          <textarea 
+                            rows={2} 
+                            placeholder="পূর্ণ ঠিকানা" 
+                            value={formData.address}
+                            onChange={e => setFormData({...formData, address: e.target.value})}
+                            className="w-full bg-brand-muted/50 border border-gray-100 rounded-2xl px-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/20 transition-all" 
+                          />
+
+                          <div className="grid grid-cols-2 gap-3 mt-6">
+                            <button type="button" onClick={() => setDeliveryArea('inside')} className={`py-3 rounded-2xl text-[10px] font-black uppercase transition-all ${deliveryArea === 'inside' ? 'bg-brand-dark text-white' : 'bg-brand-muted text-gray-400'}`}>ঢাকা (৳৮০)</button>
+                            <button type="button" onClick={() => setDeliveryArea('outside')} className={`py-3 rounded-2xl text-[10px] font-black uppercase transition-all ${deliveryArea === 'outside' ? 'bg-brand-dark text-white' : 'bg-brand-muted text-gray-400'}`}>বাহিরে (৳১৩০)</button>
+                          </div>
+
+                          {/* Bill Summary */}
+                          <div className="bg-brand-dark rounded-3xl p-6 mt-8 text-white">
+                            <div className="space-y-3 mb-4 max-h-[300px] overflow-y-auto no-scrollbar border-b border-white/5 pb-4">
+                            {activeProducts.map(item => (
+                                <div key={item.id} className="flex gap-3 items-center bg-white/5 p-2 rounded-xl">
+                                    <div className="w-10 h-10 rounded-lg bg-white overflow-hidden flex-shrink-0">
+                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-[10px] font-bold truncate pr-2">{item.name}</p>
+                                        <p className="text-[9px] text-brand-primary">Size: {selectedItems[item.id].size}</p>
+                                    </div>
+                                
+                                    <div className="flex items-center gap-2">
+                                        {/* Quantity Controls */}
+                                        <div className="flex items-center gap-1 bg-black/20 rounded-lg px-1 py-0.5">
+                                            <button onClick={() => handleQuantity(item.id, -1)} className="text-white hover:text-brand-primary px-1.5 font-bold text-xs">-</button>
+                                            <span className="font-bold text-white w-3 text-center text-[10px]">{selectedItems[item.id].quantity}</span>
+                                            <button onClick={() => handleQuantity(item.id, 1)} className="text-white hover:text-brand-primary px-1.5 font-bold text-xs">+</button>
+                                        </div>
+                                        
+                                        <p className="text-[10px] font-bold w-10 text-right">৳{item.price * selectedItems[item.id].quantity}</p>
+                                        
+                                        <button 
+                                            onClick={() => handleRemove(item.id)}
+                                            className="text-gray-500 hover:text-red-400 transition ml-1"
+                                        >
+                                            <X className="w-3 h-3" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            {activeProducts.length === 0 && <p className="text-[10px] text-gray-400 text-center py-4 italic">পণ্য সিলেক্ট করুন...</p>}
+                            </div>
+
+                            <div className="space-y-1 pb-4 border-b border-white/5 text-[10px] text-gray-400">
+                                <div className="flex justify-between">
+                                    <span>Subtotal</span>
+                                    <span>৳{subtotal}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Delivery Charge</span>
+                                    <span className={isFreeDelivery ? 'text-brand-accent font-bold' : ''}>{isFreeDelivery ? 'FREE' : `৳${deliveryCharge}`}</span>
+                                </div>
+                            </div>
+                            
+                            <div className="flex justify-between items-center pt-4">
+                                <span className="text-xs font-bold uppercase tracking-widest text-gray-300">Total</span>
+                                <span className="text-2xl font-black text-white">৳{total}</span>
+                            </div>
+
+                            <button 
+                                type="button"
+                                onClick={handleSubmit}
+                                disabled={activeProducts.length === 0 || isSubmitting}
+                                className="w-full bg-brand-primary text-white py-4 rounded-2xl text-md font-bold mt-6 shadow-xl shadow-brand-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:grayscale"
+                            >
+                            {isSubmitting ? 'Processing...' : 'অর্ডার কনফার্ম করুন'}
+                            </button>
+                          </div>
+                        </form>
+                    </motion.div>
+                )}
+                </AnimatePresence>
               </div>
             </div>
 

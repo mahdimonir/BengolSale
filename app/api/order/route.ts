@@ -9,7 +9,7 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { customer, items, total, deliveryCharge } = body;
 
-        if (isRateLimited(`checkout_ip_${ip}`, { limit: 50, windowMs: 15 * 60 * 1000 })) {
+        if (isRateLimited(`checkout_ip_${ip}`, { limit: 5, windowMs: 15 * 60 * 1000 })) {
             return NextResponse.json({ success: false, error: "Too many requests. Please try again later." }, { status: 429 });
         }
 
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
         const formattedPhone = formatBDPhoneNumber(customer.phone);
 
-        if (isRateLimited(`checkout_phone_${formattedPhone}`, { limit: 200, windowMs: 60 * 60 * 1000 })) {
+        if (isRateLimited(`checkout_phone_${formattedPhone}`, { limit: 2, windowMs: 60 * 60 * 1000 })) {
             return NextResponse.json({ success: false, error: "Too many orders for this phone number." }, { status: 429 });
         }
         const pendingOrders = await prisma.order.count({
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
             },
         });
 
-        if (pendingOrders >= 20) {
+        if (pendingOrders >= 2) {
             return NextResponse.json({ success: false, error: "You have too many pending orders." }, { status: 400 });
         }
 
