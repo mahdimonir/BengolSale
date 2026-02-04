@@ -11,27 +11,17 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  /* Brand Colors */
-  --color-brand-primary: #F97316; /* Orange-500 */
-  --color-brand-dark: #111827;    /* Gray-900 */
-  --color-brand-muted: #F3F4F6;   /* Gray-100 */
-  --color-brand-text: #1F2937;    /* Gray-800 */
-  --color-brand-accent: #EAB308;  /* Yellow-500 */
+  --color-brand-primary: #F97316;
+  --color-brand-dark: #111827;
+  --color-brand-muted: #F3F4F6;
+  --color-brand-text: #1F2937;
+  --color-brand-accent: #EAB308;
 }
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
-
-/* 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} 
-*/
 
 body {
   background: var(--background);

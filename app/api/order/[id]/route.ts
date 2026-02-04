@@ -7,15 +7,15 @@ const validateApiKey = (req: Request) => {
     return validKey && apiKey === validKey;
 };
 
-// GET: Fetch Single Order Details
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     if (!validateApiKey(req)) {
         return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
     try {
+        const { id } = await params;
         const order = await prisma.order.findUnique({
-            where: { id: params.id },
+            where: { id },
             include: { items: true },
         });
 
@@ -29,13 +29,13 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     }
 }
 
-// PATCH: Update Order Status
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
     if (!validateApiKey(req)) {
         return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
     try {
+        const { id } = await params;
         const body = await req.json();
         const { status } = body;
 
@@ -44,7 +44,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
         }
 
         const updatedOrder = await prisma.order.update({
-            where: { id: params.id },
+            where: { id },
             data: { status },
         });
 

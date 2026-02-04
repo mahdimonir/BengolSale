@@ -9,21 +9,15 @@ datasource db {
 model Product {
   id            String   @id @default(cuid())
   name          String
-  // Using String for description to compatible with all DBs, if Text is needed ensure DB supports it
   description   String   
   price         Float
-  // Simple inventory, optional
   quantity      Int      @default(0)
   imageUrl      String
   
-  // Using JSON for arrays if needed, or simple Strings for demo
-  // Postgres supports String[], but if we want max compatibility we could use JSON
-  // Sticking to String[] as per previous plan for Postgres
   category      String?
   size          String[]
   color         String[]
   
-  // Boolean for logic
   hasVariants   Boolean  @default(false)
   isPack        Boolean  @default(false) 
 
@@ -36,16 +30,13 @@ model Product {
 model Order {
   id              String      @id @default(cuid())
   
-  // Customer Info (No User table)
   customerName    String
   customerPhone   String
   customerAddress String
-  customerArea    String? // 'inside' | 'outside'
-
-  // Order Info
+  customerArea    String? 
   total           Float
   deliveryCharge  Float       @default(0)
-  status          String      @default("PENDING") // PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED
+  status          String      @default("PENDING") 
   
   items           OrderItem[]
 
@@ -61,8 +52,8 @@ model OrderItem {
   productId     String
   product       Product  @relation(fields: [productId], references: [id])
   
-  name          String   // Snapshot of product name
-  price         Float    // Snapshot of price
+  name          String   
+  price         Float    
   quantity      Int
   
   selectedSize  String?

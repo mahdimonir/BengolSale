@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import { COMBOS, FAQS, SIZES } from './constants';
 import { Combo, FAQItem, ProductSize } from './types';
 
-// Components
 const Navbar = () => (
   <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b border-gray-100/50">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -99,9 +98,8 @@ const ProductFeatures = () => {
 }
 
 export default function Home() {
-  // Store selected items as a map of ID -> details
   const [selectedItems, setSelectedItems] = useState<Record<string, { size: ProductSize, quantity: number }>>({
-    'pack-6': { size: 'M', quantity: 1 } // Default selection
+    'pack-6': { size: 'M', quantity: 1 }
   });
   
   const [deliveryArea, setDeliveryArea] = useState<'inside' | 'outside'>('inside');
@@ -111,15 +109,12 @@ export default function Home() {
   const checkoutRef = useRef<HTMLDivElement>(null);
   const scrollToCheckout = () => checkoutRef.current?.scrollIntoView({ behavior: 'smooth' });
 
-  // Compute derived values
   const selectedIds = Object.keys(selectedItems);
   const activeProducts = COMBOS.filter(c => selectedIds.includes(c.id));
   
   const subtotal = activeProducts.reduce((acc, curr) => acc + (curr.price * selectedItems[curr.id].quantity), 0);
   
-  // Logic: If user selects pack-6, pack-3, or any combination resulting in 3+ pieces, delivery is free.
   const hasPack = activeProducts.some(item => item.isPack);
-  // Count total quantity of single items
   const singleItemCount = activeProducts
     .filter(item => !item.isPack)
     .reduce((acc, curr) => acc + selectedItems[curr.id].quantity, 0);
@@ -160,7 +155,6 @@ export default function Home() {
       if (selectedItems[combo.id]) {
           handleRemove(combo.id);
       } else {
-          // Default to M if just toggling the card
           handleSelect(combo.id, 'M');
       }
   }
@@ -190,7 +184,7 @@ export default function Home() {
             name: item.name,
             price: item.price,
             quantity: selectedItems[item.id].quantity, 
-            selectedSize: selectedItems[item.id].size, // Per-item size
+            selectedSize: selectedItems[item.id].size,
             selectedColor: item.color,
             imageUrl: item.image
           })),
@@ -202,7 +196,6 @@ export default function Home() {
       const data = await response.json();
       if (data.success) {
         toast.success(`Order placed successfully! Order ID: ${data.orderId}`);
-        // Reset
         setSelectedItems({});
         setFormData({ name: '', phone: '', address: '' });
       } else {
@@ -220,7 +213,6 @@ export default function Home() {
     <div className="min-h-screen bg-brand-muted text-brand-text selection:bg-brand-primary selection:text-white pb-20 md:pb-0">
       <Navbar />
 
-      {/* Hero Section */}
       <section className="relative pt-24 pb-16 overflow-hidden bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-12 gap-12 items-center">
           <motion.div 
@@ -229,7 +221,6 @@ export default function Home() {
             viewport={{ once: true }}
             className="lg:col-span-5 z-10"
           >
-            {/* ... Hero Content ... */}
             <div className="inline-block px-4 py-1.5 bg-brand-primary/5 text-brand-primary rounded-full mb-8 font-bold text-[10px] uppercase tracking-widest">
               Limited Edition Combo Offers
             </div>
@@ -275,10 +266,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
       <ProductFeatures />
 
-      {/* Dynamic Selection Section */}
       <section id="checkout" ref={checkoutRef} className="py-24 bg-brand-muted">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
@@ -288,10 +277,8 @@ export default function Home() {
 
           <div className="grid lg:grid-cols-3 gap-12 items-start">
             
-            {/* Selection Grid */}
             <div className="lg:col-span-2 space-y-12">
               
-              {/* Value Packs */}
               <div>
                 <h3 className="text-xs font-black text-brand-primary uppercase tracking-[0.2em] mb-6 ml-2">Value Packs (সেরা অফার)</h3>
                 <div className="grid sm:grid-cols-2 gap-6">
@@ -304,7 +291,6 @@ export default function Home() {
                         : 'bg-white/50 border-white hover:border-brand-primary/30'
                       }`}
                     >
-                      {/* Clickable Area for Image/Title */}
                       <div onClick={() => toggleSelection(combo)} className="cursor-pointer">
                           <div className="aspect-[4/3] rounded-3xl overflow-hidden mb-6 bg-gray-200">
                             <img src={combo.image} alt={combo.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
@@ -316,7 +302,6 @@ export default function Home() {
                           <p className="text-xs text-gray-400 mb-6">{combo.description}</p>
                       </div>
                       
-                      {/* Inline Size Selection */}
                       <div className="bg-brand-muted/50 p-3 rounded-2xl flex items-center justify-between gap-2">
                           <span className="text-[10px] font-bold text-gray-500 uppercase">Size:</span>
                           <div className="flex gap-2">
@@ -355,7 +340,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Individual Builder */}
               <div>
                 <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 ml-2">Build Your Own (সিঙ্গেল পিস)</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -376,7 +360,6 @@ export default function Home() {
                           <p className="text-[10px] font-black text-brand-primary mb-3">৳{combo.price}</p>
                       </div>
                       
-                      {/* Compact Size Selection */}
                       <div className="grid grid-cols-3 gap-1">
                           {SIZES.map(size => (
                               <button
@@ -407,7 +390,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Sticky Checkout Panel */}
             <div className="lg:sticky lg:top-24">
               <div className="bg-white rounded-[3rem] p-8 shadow-2xl border border-gray-100">
                 <h2 className="text-2xl font-black text-brand-dark mb-8">চেকআউট</h2>
@@ -440,7 +422,6 @@ export default function Home() {
                     <button type="button" onClick={() => setDeliveryArea('outside')} className={`py-3 rounded-2xl text-[10px] font-black uppercase transition-all ${deliveryArea === 'outside' ? 'bg-brand-dark text-white' : 'bg-brand-muted text-gray-400'}`}>বাহিরে (৳১৩০)</button>
                   </div>
 
-                  {/* Bill Summary */}
                   <div className="bg-brand-dark rounded-3xl p-6 mt-8 text-white">
                     <div className="space-y-3 mb-4 max-h-48 overflow-y-auto no-scrollbar border-b border-white/5 pb-4">
                        {activeProducts.map(item => (
@@ -451,7 +432,6 @@ export default function Home() {
                            </div>
                            
                            <div className="flex items-center gap-3">
-                               {/* Quantity Controls */}
                                <div className="flex items-center gap-2 bg-white/10 rounded-lg px-1.5 py-0.5">
                                    <button 
                                      onClick={() => handleQuantity(item.id, -1)}
@@ -509,7 +489,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Re-use Size Chart, FAQ, and Footer from previous version */}
       <section className="py-24 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
@@ -563,7 +542,6 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Mobile Sticky CTA */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-brand-dark rounded-t-[1.5rem] border-t border-white/10 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)] md:hidden z-50 flex items-center justify-between gap-6 backdrop-blur-md bg-opacity-95 pb-safe">
         <div>
           <span className="block text-[8px] text-gray-400 uppercase font-black tracking-widest mb-1">Total Bill</span>

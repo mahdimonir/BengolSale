@@ -2,19 +2,26 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 export function proxy(request: NextRequest) {
-    if (request.nextUrl.pathname.startsWith('/admin')) {
-        if (request.nextUrl.pathname === '/admin/login') {
-            return NextResponse.next();
-        }
+    const { pathname } = request.nextUrl;
 
-        const token = request.cookies.get('admin_token');
-        if (!token) {
-            return NextResponse.redirect(new URL('/admin/login', request.url));
-        }
+    if (pathname.startsWith('/api')) {
+        return NextResponse.next();
     }
-    return NextResponse.next()
+    if (
+        pathname.startsWith('/_next') ||
+        pathname.startsWith('/static') ||
+        pathname.includes('.')
+    ) {
+        return NextResponse.next();
+    }
+
+    if (pathname !== '/') {
+        return NextResponse.redirect(new URL('/', request.url));
+    }
+
+    return NextResponse.next();
 }
 
 export const config = {
-    matcher: '/admin/:path*',
-}
+    matcher: '/:path*',
+};
