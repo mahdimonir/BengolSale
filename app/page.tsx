@@ -255,7 +255,7 @@ export default function Home() {
 
           <div className="lg:col-span-7 relative">
               <div className="aspect-[16/9] rounded-[2.5rem] overflow-hidden shadow-2xl bg-gray-100">
-               <img src="/products/hero.png" alt="Hero Product" className="w-full h-full object-contain" />
+                <iframe className="w-full h-full" src="https://www.youtube.com/embed/-I4WL2yS1WQ?si=4B7XX4kKJLLC4iWq" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
             </div>
             <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-3xl shadow-xl border border-gray-100 hidden md:block">
               <div className="flex items-center gap-3">
