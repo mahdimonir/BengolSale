@@ -98,9 +98,7 @@ const ProductFeatures = () => {
 }
 
 export default function Home() {
-  const [selectedItems, setSelectedItems] = useState<Record<string, { size: ProductSize, quantity: number }>>({
-    'pack-6': { size: 'M', quantity: 1 }
-  });
+  const [selectedItems, setSelectedItems] = useState<Record<string, { size: ProductSize, quantity: number }>>({});
   
   const [deliveryArea, setDeliveryArea] = useState<'inside' | 'outside'>('inside');
   const [formData, setFormData] = useState({ name: '', phone: '', address: '' });
@@ -216,7 +214,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-muted text-brand-text selection:bg-brand-primary selection:text-white pb-20 md:pb-0">
+    <div className="min-h-screen w-full max-w-[100vw] bg-brand-muted text-brand-text selection:bg-brand-primary selection:text-white pb-20 md:pb-0 overflow-x-hidden">
       <Navbar />
 
       <section className="relative pt-24 pb-16 overflow-hidden bg-white">
@@ -254,7 +252,7 @@ export default function Home() {
           </motion.div>
 
           <div className="lg:col-span-7 relative">
-              <div className="aspect-[16/9] rounded-[2.5rem] overflow-hidden shadow-2xl bg-gray-100">
+              <div className="aspect-[16/9] rounded-xl md:rounded-[2.5rem] overflow-hidden shadow-2xl bg-gray-100">
                 <iframe className="w-full h-full" src="https://www.youtube.com/embed/-I4WL2yS1WQ?si=4B7XX4kKJLLC4iWq" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
             </div>
             <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-3xl shadow-xl border border-gray-100 hidden md:block">
@@ -272,43 +270,46 @@ export default function Home() {
         </div>
       </section>
 
-      <ProductFeatures />
-
-      <section id="checkout" ref={checkoutRef} className="py-24 bg-brand-muted">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <section id="checkout" ref={checkoutRef} className="py-12 md:py-24 bg-brand-muted overflow-x-hidden">
+        <div className="max-w-7xl mx-auto px-0 sm:px-6 overflow-x-hidden">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-black text-brand-dark mb-4">আপনার প্যাকটি বাছাই করুন</h2>
             <p className="text-gray-500 text-sm">প্যাক বা সিঙ্গেল টি-শার্ট সিলেক্ট করুন এবং নিজের সাইজ বেছে নিন</p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-12 items-start">
+          <div className="grid lg:grid-cols-3 gap-3 sm:gap-6 md:gap-8 lg:gap-12 items-start overflow-hidden">
             
-            <div className="lg:col-span-2 space-y-12">
+            <div className="lg:col-span-2 space-y-6 sm:space-y-8 md:space-y-12 overflow-hidden">
               
-              <div>
-                <h3 className="text-xs font-black text-brand-primary uppercase tracking-[0.2em] mb-6 ml-2">Value Packs (সেরা অফার)</h3>
-                <div className="grid sm:grid-cols-2 gap-6">
+              <div className="overflow-hidden">
+                <h3 className="text-xs font-black text-brand-primary uppercase tracking-[0.2em] mb-6 ml-0 sm:ml-2">Value Packs (সেরা অফার)</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-4 md:gap-6 w-full overflow-hidden">
                   {COMBOS.filter(c => c.isPack).map((combo) => (
                     <div
                       key={combo.id}
-                      className={`group relative text-left p-6 rounded-[2.5rem] border-2 transition-all duration-300 ${
+                      className={`group relative w-full min-w-0 max-w-full overflow-hidden text-left p-1 sm:p-3 md:p-6 rounded-lg md:rounded-[2.5rem] transition-all duration-300 ${
                         selectedItems[combo.id]
-                        ? 'bg-white border-brand-primary shadow-xl scale-[1.02] z-10' 
-                        : 'bg-white/50 border-white hover:border-brand-primary/30'
+                        ? 'bg-white' 
+                        : 'bg-white/50'
                       }`}
+                      style={{
+                        boxShadow: selectedItems[combo.id] 
+                          ? 'inset 0 0 0 1px #F97316'
+                          : 'inset 0 0 0 1px #E5E7EB'
+                      }}
                     >
                       <div onClick={() => toggleSelection(combo)} className="cursor-pointer">
-                          <div className="aspect-[4/3] rounded-3xl overflow-hidden mb-6 bg-gray-200">
-                            <img src={combo.image} alt={combo.name} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" />
+                          <div className="aspect-[4/3] rounded-2xl md:rounded-3xl overflow-hidden mb-3 md:mb-6 bg-gray-200">
+                            <img src={combo.image} alt={combo.name} className="w-full h-full object-contain" />
                           </div>
                           <div className="flex justify-between items-start mb-2">
-                            <h4 className="font-black text-brand-dark">{combo.name}</h4>
-                            <span className="font-black text-brand-primary">৳{combo.price}</span>
+                            <h4 className="font-black text-sm md:text-base text-brand-dark">{combo.name}</h4>
+                            <span className="font-black text-sm md:text-base text-brand-primary">৳{combo.price}</span>
                           </div>
-                          <p className="text-xs text-gray-400 mb-6">{combo.description}</p>
+                          <p className="text-xs text-gray-400 mb-3 md:mb-6">{combo.description}</p>
                       </div>
                       
-                      <div className="bg-brand-muted/50 p-3 rounded-2xl flex items-center justify-between gap-2">
+                      <div className="bg-brand-muted/50 p-2 md:p-3 rounded-xl md:rounded-2xl flex items-center justify-between gap-2">
                           <span className="text-[10px] font-bold text-gray-500 uppercase">Size:</span>
                           <div className="flex gap-2">
                               {SIZES.map(size => (
@@ -320,7 +321,7 @@ export default function Home() {
                                     }}
                                     className={`w-8 h-8 rounded-lg text-[10px] font-bold transition-all ${
                                         selectedItems[combo.id]?.size === size
-                                        ? 'bg-brand-primary text-white shadow-lg scale-110 ring-2 ring-brand-primary ring-offset-2'
+                                        ? 'bg-brand-primary text-white shadow-sm ring-1 ring-brand-primary'
                                         : 'bg-white text-gray-400 hover:bg-gray-100'
                                     }`}
                                   >
@@ -331,7 +332,7 @@ export default function Home() {
                       </div>
 
                       {combo.id === 'pack-6' && (
-                        <div className="absolute -top-3 -right-3 bg-brand-dark text-white text-[8px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg">
+                        <div className="absolute top-3 right-3 bg-brand-dark text-white text-[8px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md z-10">
                           Best Value
                         </div>
                       )}
@@ -346,24 +347,29 @@ export default function Home() {
                 </div>
               </div>
 
-              <div>
-                <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 ml-2">Build Your Own (সিঙ্গেল পিস)</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="overflow-hidden">
+                <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-6 ml-0 sm:ml-2">Build Your Own (সিঙ্গেল পিস)</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-0.5 sm:gap-3 md:gap-4 w-full overflow-hidden">
                   {COMBOS.filter(c => !c.isPack).map((combo) => (
                     <div
                       key={combo.id}
-                      className={`group relative text-left p-4 rounded-3xl border-2 transition-all duration-300 ${
+                      className={`group relative w-full min-w-0 max-w-full overflow-hidden text-left p-1 md:p-4 rounded-md md:rounded-3xl transition-all duration-300 ${
                         selectedItems[combo.id]
-                        ? 'bg-white border-brand-primary shadow-lg' 
-                        : 'bg-white/50 border-white hover:border-brand-primary/20'
+                        ? 'bg-white' 
+                        : 'bg-white/50'
                       }`}
+                      style={{
+                        boxShadow: selectedItems[combo.id] 
+                          ? 'inset 0 0 0 1px #F97316'
+                          : 'inset 0 0 0 1px #E5E7EB'
+                      }}
                     >
                       <div onClick={() => toggleSelection(combo)} className="cursor-pointer">
-                          <div className="aspect-square rounded-2xl overflow-hidden mb-4 bg-gray-200">
+                          <div className="aspect-square rounded-lg md:rounded-2xl overflow-hidden mb-2 md:mb-4 bg-gray-200">
                             <img src={combo.image} alt={combo.name} className="w-full h-full object-cover" />
                           </div>
-                          <h4 className="text-[11px] font-black text-brand-dark mb-1 truncate">{combo.name}</h4>
-                          <p className="text-[10px] font-black text-brand-primary mb-3">৳{combo.price}</p>
+                          <h4 className="text-[10px] md:text-[11px] font-black text-brand-dark mb-1 truncate">{combo.name}</h4>
+                          <p className="text-[9px] md:text-[10px] font-black text-brand-primary mb-2 md:mb-3">৳{combo.price}</p>
                       </div>
                       
                       <div className="grid grid-cols-3 gap-1">
@@ -376,7 +382,7 @@ export default function Home() {
                                 }}
                                 className={`h-6 rounded-md text-[8px] font-bold transition-all ${
                                     selectedItems[combo.id]?.size === size
-                                    ? 'bg-brand-primary text-white ring-1 ring-brand-primary ring-offset-1'
+                                    ? 'bg-brand-primary text-white ring-1 ring-brand-primary'
                                     : 'bg-brand-muted text-gray-400 hover:bg-gray-200'
                                 }`}
                               >
@@ -386,7 +392,7 @@ export default function Home() {
                       </div>
 
                       {selectedItems[combo.id] && (
-                        <div className="absolute top-2 right-2 w-5 h-5 bg-brand-primary text-white rounded-full flex items-center justify-center shadow-md">
+                        <div className="absolute top-2 right-2 w-5 h-5 bg-brand-primary text-white rounded-full flex items-center justify-center">
                           <Check className="w-3 h-3" />
                         </div>
                       )}
@@ -398,7 +404,7 @@ export default function Home() {
 
             {/* Sticky Checkout Panel */}
             <div className="lg:sticky lg:top-24" ref={formRef}>
-              <div className="bg-white rounded-[3rem] p-8 shadow-2xl border border-gray-100 overflow-hidden relative">
+              <div className="bg-white rounded-2xl md:rounded-[3rem] p-5 md:p-8 shadow-xl border border-gray-100 overflow-hidden relative">
                 
                 <AnimatePresence mode="wait">
                 {isOrderSuccess ? (
@@ -458,34 +464,47 @@ export default function Home() {
                           </div>
 
                           {/* Bill Summary */}
-                          <div className="bg-brand-dark rounded-3xl p-6 mt-8 text-white">
-                            <div className="space-y-3 mb-4 max-h-[300px] overflow-y-auto no-scrollbar border-b border-white/5 pb-4">
+                          <div className="bg-brand-dark rounded-3xl p-4 md:p-6 mt-8 text-white">
+                            <div className="space-y-3 mb-4 max-h-[45vh] sm:max-h-[320px] overflow-y-auto no-scrollbar border-b border-white/5 pb-4 overscroll-contain">
                             {activeProducts.map(item => (
-                                <div key={item.id} className="flex gap-3 items-center bg-white/5 p-2 rounded-xl">
-                                    <div className="w-10 h-10 rounded-lg bg-white overflow-hidden flex-shrink-0">
-                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-[10px] font-bold truncate pr-2">{item.name}</p>
-                                        <p className="text-[9px] text-brand-primary">Size: {selectedItems[item.id].size}</p>
+                                <div 
+                                    key={item.id} 
+                                    className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 bg-white/5 p-3 rounded-xl text-white relative group"
+                                >
+                                    {/* Image + name row on mobile */}
+                                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                                        <div className="w-10 h-10 rounded-lg bg-white shrink-0 overflow-hidden">
+                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[11px] font-bold leading-tight truncate sm:whitespace-normal pr-6 sm:pr-0">
+                                                {item.name}
+                                            </p>
+                                            <p className="text-[10px] text-brand-primary font-bold mt-0.5">
+                                                Size: {selectedItems[item.id].size}
+                                            </p>
+                                        </div>
                                     </div>
                                 
-                                    <div className="flex items-center gap-2">
-                                        {/* Quantity Controls */}
-                                        <div className="flex items-center gap-1 bg-black/20 rounded-lg px-1 py-0.5">
-                                            <button onClick={() => handleQuantity(item.id, -1)} className="text-white hover:text-brand-primary px-1.5 font-bold text-xs">-</button>
-                                            <span className="font-bold text-white w-3 text-center text-[10px]">{selectedItems[item.id].quantity}</span>
-                                            <button onClick={() => handleQuantity(item.id, 1)} className="text-white hover:text-brand-primary px-1.5 font-bold text-xs">+</button>
+                                    {/* Controls row on mobile */}
+                                    <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto pl-[48px] sm:pl-0">
+                                        {/* Quantity */}
+                                        <div className="flex items-center gap-1 bg-black/30 rounded-lg px-2 py-1 shrink-0 border border-white/5">
+                                            <button onClick={() => handleQuantity(item.id, -1)} className="text-white hover:text-brand-primary px-1.5 font-bold text-xs transition">-</button>
+                                            <span className="font-bold text-white w-4 text-center text-[10px]">{selectedItems[item.id].quantity}</span>
+                                            <button onClick={() => handleQuantity(item.id, 1)} className="text-white hover:text-brand-primary px-1.5 font-bold text-xs transition">+</button>
                                         </div>
                                         
-                                        <p className="text-[10px] font-bold w-10 text-right">৳{item.price * selectedItems[item.id].quantity}</p>
-                                        
-                                        <button 
-                                            onClick={() => handleRemove(item.id)}
-                                            className="text-gray-500 hover:text-red-400 transition ml-1"
-                                        >
-                                            <X className="w-3 h-3" />
-                                        </button>
+                                        <div className="flex items-center gap-3">
+                                            <p className="text-[11px] font-bold w-12 text-right tracking-tight">৳{item.price * selectedItems[item.id].quantity}</p>
+                                            
+                                            <button 
+                                                onClick={() => handleRemove(item.id)}
+                                                className="text-white/30 hover:text-red-400 transition p-1 rounded-full hover:bg-white/5"
+                                            >
+                                                <X className="w-4 h-4" />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -512,7 +531,7 @@ export default function Home() {
                                 type="button"
                                 onClick={handleSubmit}
                                 disabled={activeProducts.length === 0 || isSubmitting}
-                                className="w-full bg-brand-primary text-white py-4 rounded-2xl text-md font-bold mt-6 shadow-xl shadow-brand-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:grayscale"
+                                className="w-full bg-brand-primary text-white py-4 rounded-2xl text-md font-bold mt-6 shadow-xl shadow-brand-primary/20 hover:opacity-90 transition-all disabled:opacity-50 disabled:grayscale"
                             >
                             {isSubmitting ? 'Processing...' : 'অর্ডার কনফার্ম করুন'}
                             </button>
@@ -527,8 +546,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+      
+      <ProductFeatures />
 
-      <section className="py-24 bg-white">
+      <section className="py-12 md:py-24 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
             <h2 className="text-2xl font-black text-brand-dark mb-2">সাইজ মেজারমেন্ট</h2>
@@ -536,7 +557,7 @@ export default function Home() {
               <Ruler className="w-4 h-4" /> ইঞ্চি (Inches)
             </div>
           </div>
-          <div className="bg-brand-muted rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-sm">
+          <div className="bg-brand-muted rounded-2xl md:rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-sm">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-100">
                 <tr>
@@ -562,7 +583,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="faq" className="py-24 bg-brand-muted">
+      <section id="faq" className="py-12 md:py-24 bg-brand-muted">
         <div className="max-w-2xl mx-auto px-4 sm:px-6">
           <h2 className="text-center text-3xl font-black text-brand-dark mb-16">সাধারণ কিছু প্রশ্ন</h2>
           <div className="space-y-4">
@@ -581,14 +602,14 @@ export default function Home() {
         </div>
       </footer>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-brand-dark rounded-t-[1.5rem] border-t border-white/10 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.3)] md:hidden z-50 flex items-center justify-between gap-6 backdrop-blur-md bg-opacity-95 pb-safe">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-brand-dark rounded-t-2xl md:rounded-t-[1.5rem] border-t border-white/10 shadow-lg md:hidden z-50 flex items-center justify-between gap-6 backdrop-blur-md bg-opacity-95 pb-safe">
         <div>
           <span className="block text-[8px] text-gray-400 uppercase font-black tracking-widest mb-1">Total Bill</span>
           <span className="text-xl font-black text-white">৳{total}</span>
         </div>
         <button 
           onClick={scrollToCheckout}
-          className="flex-1 bg-brand-primary text-white py-3.5 rounded-xl font-black text-sm shadow-xl shadow-brand-primary/20 flex items-center justify-center gap-2 active:scale-95 transition-transform"
+          className="flex-1 bg-brand-primary text-white py-3.5 rounded-xl font-black text-sm shadow-xl shadow-brand-primary/20 flex items-center justify-center gap-2 transition-transform"
         >
           <ShoppingCart className="w-4 h-4" />
           অর্ডার করুন
